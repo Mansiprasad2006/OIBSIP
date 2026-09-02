@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEMPSHIFT — Temperature Converter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================= TOKENS ============================= */
+  :root{
+    --ink:        #12181B;
+    --panel:      #1B2328;
+    --panel-2:    #212B31;
+    --line:       #2C383F;
+    --text:       #E7ECEE;
+    --text-dim:   #93A3AA;
+    --cold:       #52D6EC;
+    --cold-dim:   #2C5C66;
+    --hot:        #FF7A45;
+    --hot-dim:    #6B3A26;
+    --warn:       #F2C14E;
+    --danger:     #FF5C5C;
+    --danger-bg:  #331C1C;
+    --radius-s:   6px;
+    --radius-m:   12px;
+    --radius-l:   20px;
+    --font-head:  'Space Grotesk', sans-serif;
+    --font-mono:  'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text);
+    font-family:var(--font-head);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--hot); color:var(--ink); }
+
+  a{ color:inherit; }
+  h1,h2,h3{ font-family:var(--font-head); margin:0; letter-spacing:-0.01em; }
+  p{ margin:0; }
+
+  .wrap{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  :focus-visible{
+    outline:2px solid var(--cold);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  /* ============================= HEADER ============================= */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:rgba(18,24,27,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    max-width:1100px; margin:0 auto;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-weight:700; font-size:1.15rem;
+    text-decoration:none;
+  }
+  .logo-mark{
+    width:22px; height:22px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--cold), var(--hot));
+    flex-shrink:0;
+  }
+  .nav-links{
+    display:flex; gap:28px;
+    font-size:0.92rem;
+    color:var(--text-dim);
+  }
+  .nav-links a{ text-decoration:none; transition:color .2s ease; }
+  .nav-links a:hover{ color:var(--text); }
+  @media (max-width:640px){ .nav-links{ display:none; } }
+
+  /* ============================= HERO ============================= */
+  .hero{
+    padding:88px 0 72px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:56px;
+    align-items:center;
+  }
+  @media (max-width:860px){
+    .hero-grid{ grid-template-columns:1fr; }
+  }
+  .eyebrow{
+    color:var(--text-dim);
+    font-size:0.92rem;
+    margin-bottom:16px;
+  }
+  .hero h1{
+    font-size:clamp(2.4rem, 5vw, 3.6rem);
+    font-weight:700;
+    line-height:1.05;
+  }
+  .hero h1 .accent{
+    background:linear-gradient(100deg, var(--cold), var(--hot));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p.lede{
+    margin-top:22px;
+    max-width:46ch;
+    color:var(--text-dim);
+    font-size:1.08rem;
+  }
+  .hero-cta{
+    margin-top:32px;
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--font-head);
+    font-weight:600;
+    font-size:0.96rem;
+    padding:13px 24px;
+    border-radius:var(--radius-s);
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .15s ease, background .2s ease, border-color .2s ease;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{
+    background:var(--text);
+    color:var(--ink);
+  }
+  .btn-primary:hover{ background:#fff; }
+  .btn-ghost{
+    background:transparent;
+    color:var(--text);
+    border-color:var(--line);
+  }
+  .btn-ghost:hover{ border-color:var(--text-dim); }
+
+  /* mini gauge illustration in hero */
+  .gauge-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:28px;
+  }
+  .gauge-label{
+    display:flex; justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--text-dim);
+    margin-bottom:10px;
+  }
+  .gauge-track{
+    position:relative;
+    height:14px;
+    border-radius:99px;
+    background:linear-gradient(90deg, var(--cold), var(--warn), var(--hot));
+    margin-bottom:14px;
+  }
+  .gauge-marker{
+    position:absolute;
+    top:50%;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--ink);
+    border:3px solid var(--text);
+    transform:translate(-50%,-50%);
+    transition:left .35s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 0 4px rgba(0,0,0,0.25);
+  }
+  .gauge-readout{
+    font-family:var(--font-mono);
+    font-size:2.2rem;
+    font-weight:600;
+  }
+  .gauge-readout span{
+    font-size:1.1rem;
+    color:var(--text-dim);
+    font-weight:400;
+  }
+  .gauge-sub{
+    margin-top:6px;
+    font-size:0.9rem;
+    color:var(--text-dim);
+  }
+
+  /* ============================= SECTION HEADERS ============================= */
+  .section{ padding:72px 0; border-bottom:1px solid var(--line); }
+  .section-head{
+    max-width:56ch;
+    margin-bottom:44px;
+  }
+  .section-head h2{
+    font-size:clamp(1.7rem, 3vw, 2.2rem);
+    font-weight:700;
+  }
+  .section-head p{
+    margin-top:12px;
+    color:var(--text-dim);
+    font-size:1.02rem;
+  }
+
+  /* ============================= CONVERTER ============================= */
+  .converter{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    overflow:hidden;
+  }
+  @media (max-width:860px){
+    .converter{ grid-template-columns:1fr; }
+  }
+  .converter-input{
+    padding:36px;
+    border-right:1px solid var(--line);
+  }
+  @media (max-width:860px){
+    .converter-input{ border-right:none; border-bottom:1px solid var(--line); }
+  }
+  .converter-output{
+    padding:36px;
+    background:var(--panel-2);
+  }
+
+  .field-label{
+    display:block;
+    font-size:0.85rem;
+    color:var(--text-dim);
+    margin-bottom:8px;
+  }
+  .value-row{
+    display:flex; gap:10px;
+    margin-bottom:26px;
+  }
+  #tempInput{
+    flex:1;
+    min-width:0;
+    font-family:var(--font-mono);
+    font-size:1.6rem;
+    font-weight:600;
+    background:var(--ink);
+    border:1px solid var(--line);
+    border-radius:var(--radius-s);
+    color:var(--text);
+    padding:14px 16px;
+    transition:border-color .2s ease;
+  }
+  #tempInput:focus{ border-color:var(--cold); outline:none; }
+  #tempInput.invalid{ border-color:var(--danger); }
+
+  .unit-pills{
+    display:flex;
+    gap:8px;
+    margin-bottom:26px;
+    flex-wrap:wrap;
+  }
+  .unit-pill{
+    position:relative;
+  }
+  .unit-pill input{
+    position:absolute;
+    opacity:0;
+    inset:0;
+    cursor:pointer;
+    margin:0;
+  }
+  .unit-pill label{
+    display:block;
+    padding:10px 18px;
+    border-radius:99px;
+    border:1px solid var(--line);
+    font-size:0.92rem;
+    font-family:var(--font-mono);
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .unit-pill input:checked + label{
+    background:var(--text);
+    color:var(--ink);
+    border-color:var(--text);
+  }
+  .unit-pill input:focus-visible + label{
+    outline:2px solid var(--cold);
+    outline-offset:2px;
+  }
+
+  .mode-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:24px;
+    border-top:1px solid var(--line);
+    padding-top:20px;
+  }
+  .mode-text{ font-size:0.88rem; color:var(--text-dim); }
+  .switch{
+    position:relative;
+    width:46px; height:26px;
+    flex-shrink:0;
+  }
+  .switch input{
+    position:absolute; inset:0; opacity:0; cursor:pointer; margin:0;
+  }
+  .switch .track{
+    position:absolute; inset:0;
+    background:var(--line);
+    border-radius:99px;
+    transition:background .2s ease;
+  }
+  .switch .knob{
+    position:absolute;
+    top:3px; left:3px;
+    width:20px; height:20px;
+    border-radius:50%;
+    background:var(--text);
+    transition:transform .2s ease;
+  }
+  .switch input:checked ~ .track{ background:var(--cold-dim); }
+  .switch input:checked ~ .knob{ transform:translateX(20px); background:var(--cold); }
+  .switch input:focus-visible ~ .track{ outline:2px solid var(--cold); outline-offset:2px; }
+
+  #convertBtn{
+    width:100%;
+    background:linear-gradient(100deg, var(--cold), var(--hot));
+    color:var(--ink);
+    font-weight:700;
+    font-size:1rem;
+    padding:15px;
+    border:none;
+    border-radius:var(--radius-s);
+    cursor:pointer;
+    transition:opacity .2s ease, transform .15s ease;
+  }
+  #convertBtn:hover{ opacity:0.92; }
+  #convertBtn:active{ transform:scale(0.98); }
+  #convertBtn.hidden{ display:none; }
+
+  .error-msg{
+    display:none;
+    margin-top:14px;
+    padding:12px 14px;
+    background:var(--danger-bg);
+    border:1px solid var(--danger);
+    border-radius:var(--radius-s);
+    color:#FFB3B3;
+    font-size:0.88rem;
+  }
+  .error-msg.show{ display:block; }
+
+  /* output side */
+  .result-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .result-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:16px 18px;
+    background:var(--ink);
+    border:1px solid var(--line);
+    border-radius:var(--radius-s);
+    transition:border-color .2s ease;
+  }
+  .result-row.source{
+    border-color:var(--cold-dim);
+  }
+  .result-unit{
+    font-size:0.85rem;
+    color:var(--text-dim);
+  }
+  .result-value{
+    font-family:var(--font-mono);
+    font-size:1.35rem;
+    font-weight:600;
+  }
+  .result-tag{
+    font-size:0.68rem;
+    color:var(--cold);
+    font-family:var(--font-mono);
+    margin-left:8px;
+  }
+
+  .placeholder-note{
+    color:var(--text-dim);
+    font-size:0.92rem;
+    padding:14px 0;
+  }
+
+  .absolute-zero-alert{
+    display:none;
+    margin-top:20px;
+    padding:18px;
+    background:var(--danger-bg);
+    border:1px solid var(--danger);
+    border-radius:var(--radius-m);
+  }
+  .absolute-zero-alert.show{ display:block; }
+  .absolute-zero-alert h3{
+    font-size:1rem;
+    color:#FFB3B3;
+    margin-bottom:6px;
+  }
+  .absolute-zero-alert p{
+    font-size:0.88rem;
+    color:#E7B8B8;
+  }
+
+  /* ============================= SCALES ============================= */
+  .scale-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  @media (max-width:780px){ .scale-grid{ grid-template-columns:1fr; } }
+  .scale-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    padding:26px;
+  }
+  .scale-card .mark{
+    font-family:var(--font-mono);
+    font-size:2.2rem;
+    font-weight:600;
+    color:var(--cold);
+  }
+  .scale-card.hot .mark{ color:var(--hot); }
+  .scale-card.neutral .mark{ color:var(--warn); }
+  .scale-card h3{
+    margin-top:10px;
+    font-size:1.1rem;
+  }
+  .scale-card p{
+    margin-top:8px;
+    color:var(--text-dim);
+    font-size:0.92rem;
+  }
+
+  /* ============================= FORMULAS ============================= */
+  .formula-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    overflow:hidden;
+  }
+  @media (max-width:780px){ .formula-grid{ grid-template-columns:1fr; } }
+  .formula-cell{
+    background:var(--panel);
+    padding:24px;
+  }
+  .formula-cell .from-to{
+    font-size:0.82rem;
+    color:var(--text-dim);
+    margin-bottom:10px;
+  }
+  .formula-cell code{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:1rem;
+    color:var(--text);
+    background:var(--ink);
+    padding:12px 14px;
+    border-radius:var(--radius-s);
+    border:1px solid var(--line);
+  }
+
+  /* ============================= ABSOLUTE ZERO ============================= */
+  .az-layout{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:48px;
+    align-items:center;
+  }
+  @media (max-width:860px){ .az-layout{ grid-template-columns:1fr; } }
+  .az-copy p{ color:var(--text-dim); margin-bottom:14px; }
+  .az-copy p:last-child{ margin-bottom:0; }
+  .az-copy strong{ color:var(--text); }
+
+  .az-scale{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:32px;
+  }
+  .az-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px dashed var(--line);
+    font-family:var(--font-mono);
+    font-size:0.92rem;
+  }
+  .az-row:last-child{ border-bottom:none; }
+  .az-row .u{ color:var(--text-dim); }
+  .az-row .v{ color:var(--danger); font-weight:600; }
+
+  /* ============================= FOOTER ============================= */
+  footer{
+    padding:40px 0;
+  }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:12px;
+    color:var(--text-dim);
+    font-size:0.86rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#top">
+      <span class="logo-mark"></span>
+      TEMPSHIFT
+    </a>
+    <nav class="nav-links">
+      <a href="#converter">Converter</a>
+      <a href="#scales">Scales</a>
+      <a href="#formulas">Formulas</a>
+      <a href="#absolute-zero">Absolute zero</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================= HERO ============================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">A small tool for a precise question</p>
+        <h1>How hot is that,<br> <span class="accent">really?</span></h1>
+        <p class="lede">TEMPSHIFT converts between Celsius, Fahrenheit, and Kelvin as you type, catches invalid input before it causes a mistake, and stops you at absolute zero — the coldest temperature that can exist.</p>
+        <div class="hero-cta">
+          <a href="#converter" class="btn btn-primary">Open the converter</a>
+          <a href="#absolute-zero" class="btn btn-ghost">Why absolute zero matters</a>
+        </div>
+      </div>
+
+      <div class="gauge-card">
+        <div class="gauge-label">
+          <span id="heroGaugeLeft">−100 °C</span>
+          <span id="heroGaugeRight">100 °C</span>
+        </div>
+        <div class="gauge-track">
+          <div class="gauge-marker" id="heroMarker" style="left:60.5%;"></div>
+        </div>
+        <div class="gauge-readout" id="heroReadout">21.0<span> °C</span></div>
+        <p class="gauge-sub" id="heroSub">A comfortable room, give or take.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= CONVERTER ============================= -->
+  <section class="section" id="converter">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Enter a value, pick a unit</h2>
+        <p>Auto-convert updates the results as you type. Turn it off if you'd rather review your number before converting.</p>
+      </div>
+
+      <div class="converter">
+        <div class="converter-input">
+          <label class="field-label" for="tempInput">Temperature value</label>
+          <div class="value-row">
+            <input type="text" id="tempInput" inputmode="decimal" placeholder="e.g. 21" autocomplete="off" aria-describedby="inputError">
+          </div>
+
+          <label class="field-label">Input unit</label>
+          <div class="unit-pills" id="unitPills">
+            <div class="unit-pill">
+              <input type="radio" name="unit" id="unitC" value="C" checked>
+              <label for="unitC">°C Celsius</label>
+            </div>
+            <div class="unit-pill">
+              <input type="radio" name="unit" id="unitF" value="F">
+              <label for="unitF">°F Fahrenheit</label>
+            </div>
+            <div class="unit-pill">
+              <input type="radio" name="unit" id="unitK" value="K">
+              <label for="unitK">K Kelvin</label>
+            </div>
+          </div>
+
+          <div class="mode-row">
+            <span class="mode-text">Auto-convert while typing</span>
+            <div class="switch">
+              <input type="checkbox" id="autoToggle" checked>
+              <span class="track"></span>
+              <span class="knob"></span>
+            </div>
+          </div>
+
+          <button id="convertBtn" class="hidden">Convert</button>
+
+          <div class="error-msg" id="inputError" role="alert"></div>
+        </div>
+
+        <div class="converter-output">
+          <label class="field-label">Converted values</label>
+          <div class="result-list" id="resultList">
+            <p class="placeholder-note">Enter a number to see it converted into all three scales.</p>
+          </div>
+
+          <div class="absolute-zero-alert" id="azAlert">
+            <h3>That's below absolute zero</h3>
+            <p id="azAlertText"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= SCALES ============================= -->
+  <section class="section" id="scales">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Three scales, one physical reality</h2>
+        <p>Each unit measures the same thing — how much a substance's particles are moving — starting from a different zero point.</p>
+      </div>
+
+      <div class="scale-grid">
+        <div class="scale-card">
+          <div class="mark">0°C</div>
+          <h3>Celsius</h3>
+          <p>Zero is set at the freezing point of water and 100 at its boiling point, at sea level. Used by most of the world for weather, cooking, and everyday measurement.</p>
+        </div>
+        <div class="scale-card hot">
+          <div class="mark">32°F</div>
+          <h3>Fahrenheit</h3>
+          <p>Water freezes at 32 and boils at 212. Still the everyday standard in the United States, its territories, and a handful of other countries.</p>
+        </div>
+        <div class="scale-card neutral">
+          <div class="mark">0 K</div>
+          <h3>Kelvin</h3>
+          <p>Starts at absolute zero rather than at water's freezing point, so it never goes negative. The scale scientists and engineers reach for.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= FORMULAS ============================= -->
+  <section class="section" id="formulas">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>The six conversions</h2>
+        <p>TEMPSHIFT runs these behind the scenes every time you enter a value.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-cell">
+          <div class="from-to">Celsius → Fahrenheit</div>
+          <code>F = (C × 9/5) + 32</code>
+        </div>
+        <div class="formula-cell">
+          <div class="from-to">Fahrenheit → Celsius</div>
+          <code>C = (F − 32) × 5/9</code>
+        </div>
+        <div class="formula-cell">
+          <div class="from-to">Celsius → Kelvin</div>
+          <code>K = C + 273.15</code>
+        </div>
+        <div class="formula-cell">
+          <div class="from-to">Kelvin → Celsius</div>
+          <code>C = K − 273.15</code>
+        </div>
+        <div class="formula-cell">
+          <div class="from-to">Fahrenheit → Kelvin</div>
+          <code>K = (F − 32) × 5/9 + 273.15</code>
+        </div>
+        <div class="formula-cell">
+          <div class="from-to">Kelvin → Fahrenheit</div>
+          <code>F = (K − 273.15) × 9/5 + 32</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= ABSOLUTE ZERO ============================= -->
+  <section class="section" id="absolute-zero" style="border-bottom:none;">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Where the scale ends</h2>
+        <p>Absolute zero is the point at which particles hold the least possible energy. Nothing can be colder — so TEMPSHIFT won't convert a value past it.</p>
+      </div>
+
+      <div class="az-layout">
+        <div class="az-copy">
+          <p><strong>Absolute zero</strong> is the theoretical floor of temperature itself, not just a low reading. It marks the point where atomic motion is at its minimum, and it has never been reached in a lab, only approached.</p>
+          <p>If you enter a value below this floor in any unit, TEMPSHIFT stops the conversion and explains why, instead of returning a number that can't physically exist.</p>
+        </div>
+
+        <div class="az-scale">
+          <div class="az-row"><span class="u">Celsius</span><span class="v">−273.15 °C</span></div>
+          <div class="az-row"><span class="u">Fahrenheit</span><span class="v">−459.67 °F</span></div>
+          <div class="az-row"><span class="u">Kelvin</span><span class="v">0 K</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>TEMPSHIFT — a temperature converter, built with HTML, CSS, and vanilla JavaScript.</span>
+    <span>No data leaves your browser.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== CONVERSION LOGIC ===================== */
+  const ABS_ZERO_C = -273.15;
+  const EPS = 1e-9;
+
+  function toCelsius(value, unit){
+    if(unit === "C") return value;
+    if(unit === "F") return (value - 32) * 5/9;
+    if(unit === "K") return value - 273.15;
+  }
+
+  function fromCelsius(c){
+    return {
+      C: c,
+      F: (c * 9/5) + 32,
+      K: c + 273.15
+    };
+  }
+
+  function fmt(n){
+    return n.toFixed(2);
+  }
+
+  /* ===================== DOM REFS ===================== */
+  const input        = document.getElementById("tempInput");
+  const errorBox      = document.getElementById("inputError");
+  const resultList    = document.getElementById("resultList");
+  const azAlert        = document.getElementById("azAlert");
+  const azAlertText    = document.getElementById("azAlertText");
+  const convertBtn    = document.getElementById("convertBtn");
+  const autoToggle    = document.getElementById("autoToggle");
+  const unitRadios    = document.querySelectorAll('input[name="unit"]');
+
+  const heroMarker    = document.getElementById("heroMarker");
+  const heroReadout   = document.getElementById("heroReadout");
+  const heroSub       = document.getElementById("heroSub");
+
+  const unitNames = { C: "Celsius", F: "Fahrenheit", K: "Kelvin" };
+  const unitSuffix = { C: "°C", F: "°F", K: "K" };
+
+  function currentUnit(){
+    for(const r of unitRadios){ if(r.checked) return r.value; }
+    return "C";
+  }
+
+  /* ===================== VALIDATION ===================== */
+  // Accepts optional leading minus, digits, optional single decimal point + digits, while typing.
+  const NUMERIC_RE = /^-?\d*\.?\d*$/;
+
+  function showError(msg){
+    errorBox.textContent = msg;
+    errorBox.classList.add("show");
+    input.classList.add("invalid");
+  }
+
+  function clearError(){
+    errorBox.textContent = "";
+    errorBox.classList.remove("show");
+    input.classList.remove("invalid");
+  }
+
+  function isCompleteNumber(str){
+    if(str.trim() === "" || str === "-" || str === "." || str === "-."){
+      return false;
+    }
+    return /^-?\d+(\.\d+)?$/.test(str);
+  }
+
+  /* ===================== RENDERING ===================== */
+  function clearResults(){
+    resultList.innerHTML = '<p class="placeholder-note">Enter a number to see it converted into all three scales.</p>';
+    azAlert.classList.remove("show");
+  }
+
+  function renderResults(values, sourceUnit){
+    resultList.innerHTML = "";
+    ["C","F","K"].forEach(u => {
+      const row = document.createElement("div");
+      row.className = "result-row" + (u === sourceUnit ? " source" : "");
+      const left = document.createElement("span");
+      left.className = "result-unit";
+      left.textContent = unitNames[u];
+      const right = document.createElement("span");
+      right.innerHTML = `<span class="result-value">${fmt(values[u])} ${unitSuffix[u]}</span>` +
+                         (u === sourceUnit ? '<span class="result-tag">input</span>' : "");
+      row.appendChild(left);
+      row.appendChild(right);
+      resultList.appendChild(row);
+    });
+    azAlert.classList.remove("show");
+  }
+
+  function renderAbsoluteZeroViolation(sourceUnit, rawCelsius){
+    resultList.innerHTML = '<p class="placeholder-note">No output — the value below is colder than physically possible.</p>';
+    azAlert.classList.add("show");
+    azAlertText.textContent =
+      `${input.value}${unitSuffix[sourceUnit]} converts to ${fmt(rawCelsius)} °C, which is below absolute zero (−273.15 °C / −459.67 °F / 0 K). Enter a value at or above the absolute zero floor to see a conversion.`;
+  }
+
+  /* ===================== HERO GAUGE ===================== */
+  function updateHeroGauge(celsius){
+    const min = -100, max = 100;
+    const clamped = Math.max(min, Math.min(max, celsius));
+    const pct = ((clamped - min) / (max - min)) * 100;
+    heroMarker.style.left = pct + "%";
+    heroReadout.innerHTML = fmt(celsius).replace(/\.00$/, ".0") + "<span> °C</span>";
+
+    let sub;
+    if(celsius < -50) sub = "Colder than a chest freezer.";
+    else if(celsius < 0) sub = "Below freezing — bundle up.";
+    else if(celsius < 15) sub = "Cool, jacket weather.";
+    else if(celsius < 25) sub = "A comfortable room, give or take.";
+    else if(celsius < 35) sub = "Warm — a hot summer day.";
+    else if(celsius < 60) sub = "Hot enough to feel it fast.";
+    else sub = "Well beyond comfortable.";
+    heroSub.textContent = sub;
+  }
+
+  /* ===================== MAIN PROCESS ===================== */
+  function process(){
+    const raw = input.value;
+    const unit = currentUnit();
+
+    if(raw.trim() === ""){
+      clearError();
+      clearResults();
+      return;
+    }
+
+    if(!isCompleteNumber(raw)){
+      showError("Enter a valid number — digits only, with an optional decimal point or leading minus sign.");
+      clearResults();
+      return;
+    }
+
+    clearError();
+    const value = parseFloat(raw);
+    const celsius = toCelsius(value, unit);
+
+    if(celsius < ABS_ZERO_C - EPS){
+      renderAbsoluteZeroViolation(unit, celsius);
+      updateHeroGauge(Math.max(celsius, -100));
+      return;
+    }
+
+    const values = fromCelsius(celsius);
+    renderResults(values, unit);
+    updateHeroGauge(celsius);
+  }
+
+  /* ===================== EVENTS ===================== */
+  input.addEventListener("input", (e) => {
+    const v = e.target.value;
+    // Block characters that could never be part of a valid number as the user types.
+    if(!NUMERIC_RE.test(v)){
+      e.target.value = v.slice(0, -1);
+      showError("Only numbers, one decimal point, and a leading minus sign are allowed.");
+      return;
+    }
+    if(autoToggle.checked){
+      process();
+    } else {
+      clearError();
+    }
+  });
+
+  unitRadios.forEach(r => r.addEventListener("change", () => {
+    if(autoToggle.checked || input.value.trim() !== ""){
+      process();
+    }
+  }));
+
+  autoToggle.addEventListener("change", () => {
+    convertBtn.classList.toggle("hidden", autoToggle.checked);
+    if(autoToggle.checked) process();
+  });
+
+  convertBtn.addEventListener("click", process);
+
+  // Initialize button visibility to match default toggle state.
+  convertBtn.classList.toggle("hidden", autoToggle.checked);
+
+  // Seed the hero gauge with a pleasant default before any interaction.
+  updateHeroGauge(21);
+})();
+</script>
+
+</body>
+</html>
