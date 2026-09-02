@@ -3,119 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orelle — Cut for how you actually move</title>
+<title>AurumCalc</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <a href="#top" class="logo">Orelle</a>
-    <nav class="nav-links">
-      <a href="#collection">Collection</a>
-      <a href="#story">Story</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <a href="#collection" class="nav-cta">Shop the collection</a>
-  </div>
-</header>
+  <main class="calculator" aria-label="AurumCalc calculator">
 
-<main>
+    <header class="calculator__header">
+      <h1 class="calculator__brand">Aurum<span>Calc</span></h1>
+    </header>
 
-  <section class="hero" id="top">
-    <div class="hero-text">
-      <h1>Cut for how you actually move.</h1>
-      <p class="hero-sub">Orelle designs everyday clothing with the structure of tailoring and none of the stiffness — built in small runs, from fabrics chosen to soften with wear rather than wear out.</p>
-      <a href="#collection" class="btn-primary">Shop the collection</a>
-    </div>
-    <div class="hero-visual">
-      <div class="hero-plate"></div>
-      <p class="hero-caption">Fall / Winter 2026 — Look 03, the Field Coat</p>
-    </div>
-  </section>
+    <section class="screen" aria-label="Calculator display">
+      <div class="screen__history" id="history" aria-hidden="true"></div>
+      <div class="screen__result" id="display">0</div>
+    </section>
 
-  <section class="pillars" id="collection">
-    <h2>Considered by design</h2>
-    <div class="pillar-grid">
-      <div class="pillar">
-        <h3>Fabric</h3>
-        <p>Mid-weight wool, brushed cotton twill, and undyed linen sourced from mills that have made the same cloth for three generations. Nothing that pills, nothing that needs a warning label.</p>
-      </div>
-      <div class="pillar">
-        <h3>Fit</h3>
-        <p>Every silhouette is graded from a block built for movement first — sitting, reaching, walking fast to catch a train — then adjusted until it also happens to look sharp standing still.</p>
-      </div>
-      <div class="pillar">
-        <h3>Finish</h3>
-        <p>Flat-felled seams, horn buttons, no visible logos. The kind of detailing you notice on the inside of a garment, six months in, when it still hangs the way it did on day one.</p>
-      </div>
-    </div>
-  </section>
+    <div class="keys">
 
-  <section class="about" id="story">
-    <div class="about-quote">
-      <p>&ldquo;We stopped asking what would sell this season, and started asking what we'd still be wearing in five years.&rdquo;</p>
-      <span class="about-attrib">Nadia Orelle, founder</span>
-    </div>
-    <div class="about-copy">
-      <h2>Made to be worn out, not thrown out</h2>
-      <p>Orelle started in 2019 as a single coat, cut from a bolt of leftover wool a tailor in Porto couldn't sell. We still work with small mills and family-run cutting rooms today, releasing four collections a year instead of fifty-two, and repairing anything we've made, free, for as long as you own it.</p>
-      <p>No fast turnarounds, no disposable basics — just clothing built to outlast the trend it was bought for.</p>
-    </div>
-  </section>
+      <button type="button" class="key key--fn" data-action="clear">C</button>
+      <button type="button" class="key key--fn" data-action="backspace" aria-label="Backspace">⌫</button>
+      <button type="button" class="key key--fn key--placeholder" data-action="none" tabindex="-1" aria-hidden="true"></button>
+      <button type="button" class="key key--op" data-op="÷">÷</button>
 
-  <section class="reviews" id="reviews">
-    <h2>What people wear it for</h2>
-    <div class="review-grid">
-      <blockquote class="review">
-        <p>I've had the wool overshirt for two winters and it still looks better than things I bought last month.</p>
-        <cite>— Priya M., Bristol</cite>
-      </blockquote>
-      <blockquote class="review">
-        <p>Ordered a size up expecting to size down later. Never did. The fit guide was exactly right the first time.</p>
-        <cite>— Tom D., Melbourne</cite>
-      </blockquote>
-      <blockquote class="review">
-        <p>My coat button came loose after a year and they mailed me a repair kit before I'd even finished the email.</p>
-        <cite>— Esi A., Accra</cite>
-      </blockquote>
-    </div>
-  </section>
+      <button type="button" class="key key--num" data-num="7">7</button>
+      <button type="button" class="key key--num" data-num="8">8</button>
+      <button type="button" class="key key--num" data-num="9">9</button>
+      <button type="button" class="key key--op" data-op="×">×</button>
 
-</main>
+      <button type="button" class="key key--num" data-num="4">4</button>
+      <button type="button" class="key key--num" data-num="5">5</button>
+      <button type="button" class="key key--num" data-num="6">6</button>
+      <button type="button" class="key key--op" data-op="−">−</button>
 
-<footer class="footer" id="contact">
-  <div class="footer-grid">
-    <div class="footer-col">
-      <span class="logo footer-logo">Orelle</span>
-      <p>Small-batch clothing, made to last longer than the season it was bought for.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <a href="#collection">Collection</a>
-      <a href="#collection">Sizing guide</a>
-      <a href="#collection">Repairs</a>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <a href="#story">Our story</a>
-      <a href="#">Journal</a>
-      <a href="#">Careers</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a href="mailto:hello@orelle.example">hello@orelle.example</a>
-      <a href="#">Instagram</a>
-      <a href="#">Pinterest</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2026 Orelle Studio. All rights reserved.</p>
-  </div>
-</footer>
+      <button type="button" class="key key--num" data-num="1">1</button>
+      <button type="button" class="key key--num" data-num="2">2</button>
+      <button type="button" class="key key--num" data-num="3">3</button>
+      <button type="button" class="key key--op" data-op="+">+</button>
 
+      <button type="button" class="key key--num key--zero" data-num="0">0</button>
+      <button type="button" class="key key--num" data-action="decimal">.</button>
+      <button type="button" class="key key--equals" data-action="equals">=</button>
+
+    </div>
+
+  </main>
+
+<script src="script.js"></script>
 </body>
 </html>
