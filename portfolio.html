@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mira Voss — Private Chef</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --parchment: #EDE3CD;
+    --parchment-deep: #E4D8BC;
+    --ink: #241A14;
+    --wine: #7A2E2A;
+    --wine-deep: #5E211E;
+    --sage: #6E7D53;
+    --gold: #B8912F;
+    --line: rgba(36,26,20,0.18);
+
+    --font-display: "Fraunces", serif;
+    --font-body: "Work Sans", sans-serif;
+
+    --gutter: clamp(1.5rem, 5vw, 4rem);
+    --max-width: 1080px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  body{
+    margin: 0;
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, svg{ display: block; max-width: 100%; }
+
+  a{ color: inherit; }
+
+  .wrap{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+
+  section{
+    padding: clamp(3.5rem, 8vw, 6.5rem) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section:last-of-type{ border-bottom: none; }
+
+  h1, h2, h3{
+    font-family: var(--font-display);
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Skip link (accessibility) ---------- */
+  .skip-link{
+    position: absolute;
+    left: -999px;
+    top: auto;
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 0.75rem 1.25rem;
+    z-index: 200;
+  }
+  .skip-link:focus{
+    left: var(--gutter);
+    top: 0.75rem;
+  }
+
+  /* ---------- Focus visibility ---------- */
+  a:focus-visible, button:focus-visible, label:focus-visible{
+    outline: 2px solid var(--wine);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(237, 227, 205, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav .wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+  }
+
+  .nav-mark{
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .nav-links{
+    display: flex;
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a{
+    text-decoration: none;
+    font-size: 0.95rem;
+    position: relative;
+    padding-bottom: 3px;
+  }
+
+  .nav-links a::after{
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--wine);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.25s ease;
+  }
+
+  .nav-links a:hover::after,
+  .nav-links a:focus-visible::after{
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .nav-toggle{ display: none; }
+  .nav-toggle-label{ display: none; }
+
+  /* ---------- Hero ---------- */
+  .hero .wrap{
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    padding-top: clamp(3rem, 9vw, 6rem);
+  }
+
+  .hero-name{
+    font-size: clamp(2.75rem, 7vw, 5rem);
+    line-height: 0.98;
+  }
+
+  .hero-role{
+    margin-top: 0.9rem;
+    font-family: var(--font-body);
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: var(--wine-deep);
+    font-weight: 500;
+  }
+
+  .hero-line{
+    margin-top: 1.25rem;
+    max-width: 34ch;
+    color: rgba(36,26,20,0.8);
+  }
+
+  .hero-portrait{
+    position: relative;
+    justify-self: center;
+    width: clamp(180px, 22vw, 260px);
+    aspect-ratio: 1;
+  }
+
+  .hero-portrait .ring{
+    position: absolute;
+    inset: -14px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+  }
+
+  .hero-portrait .disc{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(155deg, var(--sage) 0%, var(--wine) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--parchment);
+    font-family: var(--font-display);
+    font-size: 3rem;
+  }
+
+  .hero-sprig{
+    position: absolute;
+    bottom: -18px;
+    right: -6px;
+    width: 46px;
+    height: 46px;
+    color: var(--sage);
+  }
+
+  /* ---------- About ---------- */
+  .about .wrap{
+    max-width: 640px;
+  }
+
+  .about p{
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    font-family: var(--font-display);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .about p::first-letter{
+    font-size: 3.2rem;
+    float: left;
+    line-height: 0.8;
+    padding-right: 0.5rem;
+    padding-top: 0.15rem;
+    color: var(--wine);
+  }
+
+  /* ---------- Menu / Skills ---------- */
+  .section-heading{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+    flex-wrap: wrap;
+  }
+
+  .section-heading h2{
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+  }
+
+  .section-heading .note{
+    color: rgba(36,26,20,0.6);
+    font-size: 0.95rem;
+    max-width: 30ch;
+  }
+
+  .menu-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: clamp(2rem, 5vw, 4rem);
+    row-gap: 1.6rem;
+  }
+
+  .menu-item{
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .menu-item .name{
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    white-space: nowrap;
+  }
+
+  .menu-item .leader{
+    flex: 1;
+    border-bottom: 1px dotted rgba(36,26,20,0.35);
+    transform: translateY(-4px);
+  }
+
+  .menu-item .desc{
+    font-size: 0.9rem;
+    color: rgba(36,26,20,0.65);
+    white-space: nowrap;
+  }
+
+  /* ---------- Specials / Featured cards ---------- */
+  .specials-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .special-card{
+    background: var(--parchment-deep);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--wine);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .special-card h3{
+    font-size: 1.4rem;
+  }
+
+  .special-card p{
+    margin: 0;
+    color: rgba(36,26,20,0.75);
+    font-size: 0.98rem;
+    flex-grow: 1;
+  }
+
+  .special-card .card-link{
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--wine-deep);
+    border-bottom: 1px solid currentColor;
+    align-self: flex-start;
+    padding-bottom: 1px;
+  }
+
+  .special-card .card-link:hover{
+    color: var(--wine);
+  }
+
+  /* ---------- Contact ---------- */
+  .contact .wrap{
+    text-align: center;
+  }
+
+  .contact h2{
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .contact-email{
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    text-decoration: none;
+    border-bottom: 1px solid var(--wine);
+    padding-bottom: 2px;
+  }
+
+  .social-row{
+    margin-top: 2.25rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .social-row a{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .social-row a:hover{
+    background: var(--wine);
+    border-color: var(--wine);
+  }
+
+  .social-row a:hover svg{
+    color: var(--parchment);
+  }
+
+  .social-row svg{
+    width: 18px;
+    height: 18px;
+    color: var(--ink);
+  }
+
+  footer{
+    padding: 1.75rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(36,26,20,0.55);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px){
+
+    .nav-links{
+      position: fixed;
+      top: 62px;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      background: var(--parchment);
+      padding: 1.5rem var(--gutter);
+      gap: 1.1rem;
+      border-bottom: 1px solid var(--line);
+      transform: translateY(-130%);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-toggle:checked ~ .nav-links{
+      transform: translateY(0);
+    }
+
+    .nav-toggle-label{
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .nav-toggle-label span{
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+    }
+
+    .hero .wrap{
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-line{
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .menu-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .menu-item .name, .menu-item .desc{
+      white-space: normal;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ transition: none !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a href="#top" class="nav-mark">Mira Voss</a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </label>
+
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#specials">Specials</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div>
+        <h1 class="hero-name">Mira Voss</h1>
+        <p class="hero-role">Private chef &amp; seasonal table</p>
+        <p class="hero-line">Cooking for small tables around a single idea: what's good today, treated simply and served warm.</p>
+      </div>
+      <div class="hero-portrait">
+        <div class="ring"></div>
+        <div class="disc">MV</div>
+        <svg class="hero-sprig" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M24 4C24 4 26 18 24 30C22 42 12 44 12 44" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M24 12C24 12 30 13 33 18" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M23 20C23 20 16 20 12 25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22 30C22 30 15 31 11 36" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="wrap">
+      <p>Mira trained in small kitchens before spending six years cooking on farms, where the harvest set the menu, not the calendar. She now runs a private dining table for groups of two to twelve, built entirely around what's ready to pick, catch, or ferment that week. Every booking starts with a conversation, not a fixed menu.</p>
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>What's on the table</h2>
+        <p class="note">Core techniques and ingredients the table draws from, season to season.</p>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-item"><span class="name">Open-fire cooking</span><span class="leader"></span><span class="desc">whole-animal, embers</span></div>
+        <div class="menu-item"><span class="name">Fermentation</span><span class="leader"></span><span class="desc">koji, brines, vinegars</span></div>
+        <div class="menu-item"><span class="name">Fresh pasta</span><span class="leader"></span><span class="desc">laminated &amp; hand-cut</span></div>
+        <div class="menu-item"><span class="name">Bread &amp; laminated dough</span><span class="leader"></span><span class="desc">levain, croissant</span></div>
+        <div class="menu-item"><span class="name">Whole-fish butchery</span><span class="leader"></span><span class="desc">line-caught, local</span></div>
+        <div class="menu-item"><span class="name">Preserving</span><span class="leader"></span><span class="desc">pickling, curing, jam</span></div>
+        <div class="menu-item"><span class="name">Stock &amp; sauce work</span><span class="leader"></span><span class="desc">long-reduced bases</span></div>
+        <div class="menu-item"><span class="name">Plated desserts</span><span class="leader"></span><span class="desc">fruit-forward, low-sugar</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="specials" id="specials">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>Recent tables</h2>
+        <p class="note">A few dinners worth mentioning.</p>
+      </div>
+      <div class="specials-grid">
+
+        <article class="special-card">
+          <h3>Harvest table, six courses</h3>
+          <p>A late-September dinner for eight built entirely from one farm's final pick of the season — tomatoes three ways, a whole roasted squash, and a fig galette to close.</p>
+          <a href="#contact" class="card-link">Ask about a harvest table</a>
+        </article>
+
+        <article class="special-card">
+          <h3>Fireside winter menu</h3>
+          <p>A cold-weather sitting for twelve cooked entirely over an open fire in the client's garden — smoked root vegetables, whole fish, and mulled preserves for dessert.</p>
+          <a href="#contact" class="card-link">Ask about a fireside menu</a>
+        </article>
+
+        <article class="special-card">
+          <h3>Pasta &amp; wine evening</h3>
+          <p>An intimate four-course pasta tasting for six, paired with a small-producer wine list chosen with the host ahead of time.</p>
+          <a href="#contact" class="card-link">Ask about a pasta evening</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <h2>Book a table</h2>
+      <a class="contact-email" href="mailto:mira@miravoss-table.com">mira@miravoss-table.com</a>
+
+      <div class="social-row">
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="10" x2="7" y2="17" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="7" r="1" fill="currentColor"/><path d="M11 17V10M11 13c0-1.7 1.3-3 3-3s3 1.3 3 3v4" stroke="currentColor" stroke-width="1.5"/></svg>
+        </a>
+        <a href="#" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.5"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">Mira Voss — Private Chef</div>
+</footer>
+
+</body>
+</html>
